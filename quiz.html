@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cât de bine mă cunoști?</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f4068, #162447);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #1b1a55;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            width: 440px;
+            text-align: center;
+            border: 1px solid #535c91;
+            box-sizing: border-box;
+            margin: 20px;
+        }
+        h2 { color: #ff69b4; margin-bottom: 20px; font-size: 20px; }
+        .question-counter {
+            font-size: 12px;
+            color: #9290c3;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .question-text {
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button.option-btn {
+            background: #535c91;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s ease;
+            text-align: left;
+        }
+        button.option-btn:hover {
+            background: #9290c3;
+            transform: scale(1.01);
+        }
+        .result-screen {
+            display: none;
+        }
+        .result-screen h3 {
+            color: #ff69b4;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        .result-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ecca3;
+            margin-bottom: 15px;
+        }
+        .result-message {
+            font-size: 15px;
+            line-height: 1.5;
+            background: rgba(255, 105, 180, 0.1);
+            border: 1px dashed #ff69b4;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #ffb6c1;
+        }
+        .restart-btn {
+            background: #535c91;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .restart-btn:hover {
+            background: #9290c3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <!-- ECRANUL DE ÎNTREBĂRI -->
+    <div id="quiz-container">
+        <h2>Cât de bine mă cunoști?</h2>
+        <div id="counter" class="question-counter">Întrebarea 1 din 20</div>
+        <div id="question-container" class="question-text">Se încarcă întrebarea...</div>
+        <div id="options-container" class="options"></div>
+    </div>
+
+    <!-- ECRANUL DE REZULTAT -->
+    <div id="result-container" class="result-screen">
+        <h3>Rezultat Final</h3>
+        <div id="score-display" class="result-score"></div>
+        <div id="result-message" class="result-message"></div>
+        <button class="restart-btn" onclick="restartQuiz()">Ia-o de la capăt</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Între shaorma și pizza, ce aleg fără să stau pe gânduri?",
+            options: [
+                { text: "Pizza cu de toate", correct: false },
+                { text: "Ioana", correct: false },
+                { text: "Shaorma de la tura știută de mine", correct: true }
+            ]
+        },
+        {
+            question: "Care este jocul în care am băgat cele mai multe ore și am rank Unreal?",
+            options: [
+                { text: "Fortnite (Reload / FNCS)", correct: true },
+                { text: "Ioana", correct: false },
+                { text: "Counter-Strike 2", correct: false }
+            ]
+        },
+        {
+            question: "Ce gen de filme mă ține lipit de ecran noaptea (de ex. Hereditary sau Shutter Island)?",
+            options: [
+                { text: "Comedii romantice", correct: false },
+                { text: "Filme horror și thrillere psihologice", correct: true },
+                { text: "Ioana", correct: false }
+            ]
+        },
+        {
+            question: "Ce parfum prefer să folosesc cel mai des din colecția mea?",
+            options: [
+                { text: "Ioana", correct: false },
+                { text: "Jean Paul Gaultier / Armani Code", correct: true },
+                { text: "Un spray simplu de supermarket", correct: false }
+            ]
+        },
+        {
+            question: "Ce fac cel mai des când stau la PC și am timp liber?",
+            options: [
+                { text: "Scriu cod în Python, scripturi web scraping sau fac muzică (trap/rap)", correct: true },
+                { text: "Mă uit pe TikTok ore întregi", correct: false },
+                { text: "Ioana", correct: false }
+            ]
+        },
+        {
+            question: "Care este genul muzical pe care îl ascult cel mai des sau pe care îl compun?",
+            options: [
+                { text: "Muzică populară", correct: false },
+                { text: "Ioana", correct: false },
+                { text: "Trap / Rap (Juice WRLD, Killa Fonic)", correct: true }
+            ]
+        },
+        {
+            question: "Ce componentă esențială are PC-ul meu pe care îl folosesc zilnic?",
+            options: [
+                { text: "Placa video Radeon RX 7600 și procesor Ryzen", correct: true },
+                { text: "Ioana", correct: false },
+                { text: "Doar o placă integrată veche", correct: false }
+            ]
+        },
+        {
+            question: "Cum mă cheamă în complet pe nume?",
+            options: [
+                { text: "Ioana", correct: false },
+                { text: "Barițiu George Petrișor", correct: true },
+                { text: "Andrei Popescu", correct: false }
+            ]
+        },
+        {
+            question: "Unde studiez sau ce liceu/colegiu urmez în Iași?",
+            options: [
+                { text: "Colegiul Agricol și de Industrie Alimentară Vasile Adamachi", correct: true },
+                { text: "Ioana", correct: false },
+                { text: "Un liceu teoretic mate-info", correct: false }
+            ]
+        },
+        {
+            question: "Ce serial de acțiune am maratonat recent pe Prime Video?",
+            options: [
+                { text: "Ioana", correct: false },
+                { text: "Prison Break", correct: false },
+                { text: "Reacher (toate cele 3 sezoane)", correct: true }
+            ]
+        },
+        {
+            question: "Ce serie animată urmăresc cu interes?",
+            options: [
+                { text: "Ninjago și Miraculous: Tales of Ladybug & Cat Noir", correct: true },
+                { text: "Ioana", correct: false },
+                { text: "Tom și Jerry", correct: false }
+            ]
+        },
+        {
+            question: "Ce planuri aveam legate de sală în Iași?",
+            options: [
+                { text: "Să merg doar pentru socializare", correct: false },
+                { text: "Să reiau antrenamentele de forță (inclusiv prin ESX)", correct: true },
+                { text: "Ioana", correct: false }
+            ]
+        },
+        {
+            question: "Ce limbaj de programare folosesc cel mai mult pentru scripturile mele?",
+            options: [
+                { text: "Python", correct: true },
+                { text: "Ioana", correct: false },
+                { text: "C++", correct: false }
+            ]
+        },
+        {
+            question: "Cum se numește clanul de Fortnite pe care l-am fondat?",
+            options: [
+                { text: "Ioana", correct: false },
+                { text: "Zone Evil (ZNY)", correct: true },
+                { text: "Pro Gamers", correct: false }
+            ]
+        },
+        {
+            question: "Ce am aranjat recent în camera mea ca să arate mai bine?",
+            options: [
+                { text: "Am instalat benzi LED și mi-am organizat raftul cu parfumuri", correct: true },
+                { text: "Ioana", correct: false },
+                { text: "Am mutat patul în sufragerie", correct: false }
+            ]
+        },
+        {
+            question: "Cine mi-a pus primul microfon în mână și m-a invitat la primul concert live?",
+            options: [
+                { text: "Ioana", correct: false },
+                { text: "Bariu", correct: true },
+                { text: "Un profesor de la liceu", correct: false }
+            ]
+        },
+        {
+            question: "Ce joc special am creat pentru telefonul Ioanei?",
+            options: [
+                { text: "Un joc 2D cu un dinozaur în Pygame", correct: true },
+                { text: "Ioana", correct: false },
+                { text: "Un shooter complicat", correct: false }
+            ]
+        },
+        {
+            question: "Cum se numește asistentul vocal pe care l-am programat în Python cu Llama 3.2?",
+            options: [
+                { text: "Ioana", correct: false },
+                { text: "Siri", correct: false },
+                { text: "Jarvis", correct: true }
+            ]
+        },
+        {
+            question: "Ce vârstă am?",
+            options: [
+                { text: "17 ani", correct: true },
+                { text: "18 ani", correct: false },
+                { text: "Ioana", correct: false }
+            ]
+        },
+        {
+            question: "Cine este persoana care mă face mereu să zâmbesc?",
+            options: [
+                { text: "Un coleg de clasă", correct: false },
+                { text: "Ioana", correct: true },
+                { text: "Nimeni", correct: false }
+            ]
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionContainer = document.getElementById("question-container");
+    const optionsContainer = document.getElementById("options-container");
+    const quizContainer = document.getElementById("quiz-container");
+    const resultContainer = document.getElementById("result-container");
+    const resultMessage = document.getElementById("result-message");
+    const scoreDisplay = document.getElementById("score-display");
+    const counterDisplay = document.getElementById("counter");
+
+    function loadQuestion() {
+        resetState();
+        let currentQuestion = questions[currentQuestionIndex];
+        counterDisplay.innerText = `Întrebarea ${currentQuestionIndex + 1} din ${questions.length}`;
+        questionContainer.innerText = currentQuestion.question;
+
+        currentQuestion.options.forEach(option => {
+            const button = document.createElement("button");
+            button.innerText = option.text;
+            button.classList.add("option-btn");
+            button.addEventListener("click", () => selectOption(option.correct));
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function resetState() {
+        optionsContainer.innerHTML = "";
+    }
+
+    function selectOption(isCorrect) {
+        if (isCorrect) {
+            score++;
+        }
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        quizContainer.style.display = "none";
+        resultContainer.style.display = "block";
+
+        // 20 de întrebări * 5 puncte fiecare = 100 de puncte maxim
+        let finalScore100 = score * 5;
+        scoreDisplay.innerText = `Scor: ${finalScore100} / 100 puncte`;
+
+        if (finalScore100 === 100) {
+            resultMessage.innerText = "esti foarte frumoasa si zambeste mai des esti o fata cum se cade si mi asi dori sa stii că mi ar placea sa mi cureti mandarine de craciun ❤️";
+        } else if (finalScore100 >= 50) {
+            resultMessage.innerText = "mai incearca , stiu ca esti fata desteapta si stiu ca poti 😉";
+        } else {
+            resultMessage.innerText = "aia e , mai incearca pana faci 100/100 o sa ai o surpriza 🎁";
+        }
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        resultContainer.style.display = "none";
+        quizContainer.style.display = "block";
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
